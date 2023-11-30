@@ -3,6 +3,7 @@ issue - model:
     id - int
     title - string
     description - string
+    status - string
     assigned to - string
     created_at - date/string
 */
@@ -23,7 +24,12 @@ const dbClient = new DynamoDBClient({
 const docClient = DynamoDBDocumentClient.from(dbClient);
 
 // method to write issue to dynamodb database
-const issue_write = async(request_msg) => {
+const issue_writeDB = async(request_msg) => {
+
+    console.log("inside ISSUE WRITEDB");
+
+    // get items
+    const {title, description, status, assignee} = await request_msg.json();
 
     // get current time
     const cur_time_utc = new Date();
@@ -34,10 +40,12 @@ const issue_write = async(request_msg) => {
         Item: {
             // generate uid for partition key
             'issue_id': uid(5),
-            'title': request_msg.title,
-            'description': request_msg.description,
-            'assignee': request_msg.assignee,
-            'timestamp': cur_time_utc.toISOString()
+            'title': title,
+            'description': description,
+            'status': status,
+            'assignee': assignee,
+            'timestamp': cur_time_utc.toISOString(),
+            'updated_timestamp': 'N/A'
         }
     };
 
@@ -45,4 +53,4 @@ const issue_write = async(request_msg) => {
     return docClient.send(new PutCommand(params));
 };
 
-export default issue_write;
+export default issue_writeDB;
