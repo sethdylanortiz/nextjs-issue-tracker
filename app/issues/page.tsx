@@ -1,7 +1,9 @@
 import React from 'react'
 
 const IssuesPage = () => {
-    return (
+    return 
+    (
+        
         <div>issuespage</div>
     )
 }
